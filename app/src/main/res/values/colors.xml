@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App background colour — matches CSS --bg -->
+    <color name="bg_dark">#FF06060F</color>
+    <!-- Primary accent -->
+    <color name="accent_purple">#FF7C6FFF</color>
+    <color name="accent_cyan">#FF00E5FF</color>
+    <color name="accent_pink">#FFFF6B9D</color>
+    <color name="accent_green">#FF43E97B</color>
+    <color name="accent_amber">#FFFFA94D</color>
+    <!-- Notification LED colour -->
+    <color name="notif_led">#FF7C6FFF</color>
+    <!-- Widget colours -->
+    <color name="widget_text">#FFEEEEFF</color>
+    <color name="widget_text_dim">#FFAAAACC</color>
+    <color name="widget_bg">#CC06060F</color>
+</resources>

@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#07070f">
+<title>VENOLK1</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/adhan@4.4.3/lib/bundles/adhan.umd.min.js" defer></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-scene">
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+  <div class="grid-overlay"></div>
+</div>
+
+<!-- HEADER -->
+<header id="app-header">
+  <div class="hdr-left">
+    <span class="logo">V<span class="logo-1">E</span>NOLK<span class="logo-accent">1</span></span>
+    <div class="xp-wrap"><span id="hdr-level" class="lv-badge">Lv 1</span><div class="xp-bar"><div id="hdr-xp-fill" class="xp-fill"></div></div></div>
+  </div>
+  <div class="hdr-mid">
+    <button class="search-pill" id="search-trigger"><i class="fa fa-search"></i><span>Search…</span><kbd>Ctrl+K</kbd></button>
+  </div>
+  <div class="hdr-right">
+    <button class="hdr-btn" id="theme-toggle" title="Toggle theme"><i class="fa fa-moon"></i></button>
+    <button class="hdr-btn" id="notif-btn" title="Enable Notifications"><i class="fa fa-bell"></i></button>
+    <span class="clock" id="live-clock">00:00</span>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main id="main-content">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="page-hdr">
+    <div><h1 class="page-title">Dashboard</h1><p class="page-sub" id="dash-greeting">Loading…</p></div>
+    <div class="exam-cd-pill" id="exam-cd" style="display:none"><i class="fa fa-clock"></i><span id="exam-cd-txt"></span></div>
+  </div>
+  <div class="help-banner"><i class="fa fa-circle-info"></i> Your study command center — see today's stats, upcoming sessions, due reviews, and daily goals at a glance.</div>
+  <div class="stats-row">
+    <div class="stat-card s1"><i class="fa fa-book-open stat-ico"></i><div class="stat-num" id="stat-books">0</div><div class="stat-lbl">Books</div></div>
+    <div class="stat-card s2"><i class="fa fa-check-circle stat-ico"></i><div class="stat-num" id="stat-chapters">0</div><div class="stat-lbl">Completed</div></div>
+    <div class="stat-card s3"><i class="fa fa-sticky-note stat-ico"></i><div class="stat-num" id="stat-notes">0</div><div class="stat-lbl">Notes</div></div>
+    <div class="stat-card s4"><i class="fa fa-fire stat-ico"></i><div class="stat-num" id="stat-streak">0</div><div class="stat-lbl">Streak</div></div>
+  </div>
+  <div class="dash-grid">
+    <div class="glass-card"><div class="card-hdr"><span class="card-title">Weekly Hours</span></div><div class="chart-wrap"><canvas id="chart-weekly"></canvas></div><div class="chart-empty" id="chart-weekly-empty"><i class="fa fa-chart-bar"></i><p>No sessions yet</p></div></div>
+    <div class="glass-card"><div class="card-hdr"><span class="card-title">By Subject</span></div><div class="chart-wrap"><canvas id="chart-subjects"></canvas></div><div class="chart-empty" id="chart-subjects-empty"><i class="fa fa-chart-pie"></i><p>Study to see distribution</p></div></div>
+    <div class="glass-card prayer-widget" id="prayer-widget">
+      <div class="pw-icon"><i class="fa fa-mosque"></i></div>
+      <div class="pw-info"><div class="pw-name" id="dash-next-prayer">Prayer</div><div class="pw-time" id="dash-prayer-time">Set up →</div></div>
+      <div class="pw-cd" id="dash-prayer-cd"></div>
+      <button class="btn-sm btn-pill" onclick="showPage('prayer')">Open</button>
+    </div>
+  </div>
+  <div class="panels-row">
+    <div class="glass-card"><div class="card-hdr"><span class="card-title"><i class="fa fa-calendar"></i> Upcoming</span><button class="btn-link" onclick="showPage('calendar')">All →</button></div><div id="dash-upcoming" class="panel-list"></div></div>
+    <div class="glass-card"><div class="card-hdr"><span class="card-title"><i class="fa fa-brain"></i> Due Review</span><button class="btn-link" onclick="showPage('srs')">Review →</button></div><div id="dash-srs-due" class="panel-list"></div></div>
+    <div class="glass-card goal-card"><div class="card-hdr"><span class="card-title"><i class="fa fa-bullseye"></i> Today's Goals</span></div>
+      <div class="rings-row">
+        <div class="ring-wrap"><svg viewBox="0 0 60 60" class="ring-svg"><circle cx="30" cy="30" r="24" class="ring-bg"/><circle cx="30" cy="30" r="24" class="ring-fill r1" id="ring-hours" stroke-dasharray="150.8" stroke-dashoffset="150.8"/></svg><div class="ring-label"><span id="rv-hours">0</span><small>hrs</small></div></div>
+        <div class="ring-wrap"><svg viewBox="0 0 60 60" class="ring-svg"><circle cx="30" cy="30" r="24" class="ring-bg"/><circle cx="30" cy="30" r="24" class="ring-fill r2" id="ring-chaps" stroke-dasharray="150.8" stroke-dashoffset="150.8"/></svg><div class="ring-label"><span id="rv-chaps">0</span><small>chaps</small></div></div>
+        <div class="ring-wrap"><svg viewBox="0 0 60 60" class="ring-svg"><circle cx="30" cy="30" r="24" class="ring-bg"/><circle cx="30" cy="30" r="24" class="ring-fill r3" id="ring-pomo" stroke-dasharray="150.8" stroke-dashoffset="150.8"/></svg><div class="ring-label"><span id="rv-pomo">0</span><small>pomo</small></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="glass-card quote-card"><div class="quote-star">✦</div><blockquote id="dash-quote"></blockquote><cite id="dash-cite"></cite></div>
+</div>
+
+<!-- CALENDAR -->
+<div id="page-calendar" class="page">
+  <div class="page-hdr">
+    <div class="back-dash-wrap"><button class="back-btn" onclick="showPage('dashboard')"><i class="fa fa-arrow-left"></i></button><h1 class="page-title">Calendar</h1></div>
+    <div style="display:flex;gap:8px"><button class="btn-sm btn-secondary" id="btn-add-exam"><i class="fa fa-triangle-exclamation"></i> Exam</button><button class="btn-sm btn-primary" id="btn-add-cal"><i class="fa fa-plus"></i> Add</button></div>
+  </div>
+  <div class="help-banner"><i class="fa fa-circle-info"></i> Schedule study sessions and exams. Switch between Month, Week, and Day views. Tap any date cell to add an event.</div>
+  <div class="cal-tabs"><button class="cal-tab active" data-view="month">Month</button><button class="cal-tab" data-view="week">Week</button><button class="cal-tab" data-view="day">Day</button></div>
+  <div class="cal-nav"><button class="btn-icon" id="cal-prev"><i class="fa fa-chevron-left"></i></button><h3 id="cal-label">Month Year</h3><button class="btn-icon" id="cal-next"><i class="fa fa-chevron-right"></i></button><button class="btn-sm btn-secondary" id="cal-today-btn">Today</button></div>
+  <div class="cal-layout"><div id="cal-main" class="cal-main"></div><div class="cal-side"><div class="glass-card"><div class="card-title" style="margin-bottom:10px">Upcoming</div><div id="cal-upcoming"></div></div></div></div>
+</div>
+
+<!-- BOOKS -->
+<div id="page-books" class="page">
+  <div id="books-list-view">
+    <div class="page-hdr">
+      <div class="back-dash-wrap"><button class="back-btn" onclick="showPage('dashboard')"><i class="fa fa-arrow-left"></i></button><h1 class="page-title">Books</h1></div>
+      <button class="btn-primary" id="btn-add-book"><i class="fa fa-plus"></i> Add Book</button>
+    </div>
+    <div class="help-banner"><i class="fa fa-circle-info"></i> Track every book with chapters. Each chapter has 4 stages: Reading → MCQ → CQ → Exam. Completing all 4 auto-adds it to Spaced Repetition.</div>
+    <div class="books-toolbar"><div class="chips" id="subj-chips"></div><select class="sel" id="books-sort"><option value="title">Title</option><option value="progress">Progress</option><option value="date">Recent</option><option value="priority">Priority</option></select></div>
+    <div class="books-grid" id="books-grid"><div class="empty-state" id="books-empty"><div class="empty-ico"><i class="fa fa-book-open"></i></div><h3>No Books Yet</h3><p>Add your first book to start tracking</p><button class="btn-primary" onclick="document.getElementById('btn-add-book').click()"><i class="fa fa-plus"></i> Add Book</button></div></div>
+  </div>
+  <div id="book-detail-view" style="display:none">
+    <div class="page-hdr">
+      <div class="back-dash-wrap"><button class="back-btn" id="btn-back-books"><i class="fa fa-arrow-left"></i> Books</button><h2 id="bd-title" class="page-title" style="font-size:1.2rem">Book</h2></div>
+      <button class="btn-sm btn-primary" id="btn-add-chapter"><i class="fa fa-plus"></i> Chapter</button>
+    </div>
+    <div class="book-detail-top">
+      <div class="prog-circle-wrap"><svg viewBox="0 0 120 120" class="prog-svg"><circle cx="60" cy="60" r="50" class="prog-bg"/><circle cx="60" cy="60" r="50" class="prog-ring" id="bd-prog-ring" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg><div class="prog-pct" id="bd-prog-pct">0%</div></div>
+      <div class="bd-meta"><div class="bd-row"><i class="fa fa-user"></i><span id="bd-author">—</span></div><div class="bd-row"><i class="fa fa-tag"></i><span id="bd-subj">—</span></div><div class="bd-row"><i class="fa fa-list"></i><span id="bd-chap-count">0 chapters</span></div><div class="bd-row"><i class="fa fa-calendar-day"></i><span id="bd-target">No target</span></div></div>
+    </div>
+    <div id="chapter-list" class="chapter-list"></div>
+  </div>
+</div>
+
+<!-- ROUTINE -->
+<div id="page-routine" class="page">
+  <div class="page-hdr">
+    <div class="back-dash-wrap"><button class="back-btn" onclick="showPage('dashboard')"><i class="fa fa-arrow-left"></i></button><h1 class="page-title">Weekly Routine</h1></div>
+    <button class="btn-primary" id="btn-add-routine"><i class="fa fa-plus"></i> Add Task</button>
+  </div>
+  <div class="help-banner"><i class="fa fa-circle-info"></i> Plan your weekly study schedule. Tap the checkmark to mark tasks done. They reset automatically every day. Drag tasks between days to reorganize.</div>
+  <div class="routine-overview" id="routine-overview"></div>
+  <div class="routine-grid" id="routine-grid"></div>
+</div>
+
+<!-- SRS -->
+<div id="page-srs" class="page">
+  <div class="page-hdr">
+    <div class="back-dash-wrap"><button class="back-btn" onclick="showPage('dashboard')"><i class="fa fa-arrow-left"></i></button><h1 class="page-title">Spaced Repetition</h1></div>
+  </div>
+  <div class="help-banner"><i class="fa fa-circle-info"></i> Using the SM-2 algorithm — chapters you find hard appear more often, easy ones less often. Complete a chapter's 4 stages to add it here automatically. Rate each review to schedule the next one.</div>
+  <div class="srs-layout">
+    <div class="srs-left">
+      <div class="glass-card"><div class="card-hdr"><span class="card-title">Due Today</span><span class="badge-count" id="srs-due-count">0</span></div><button class="btn-primary w-full mb-3" id="btn-start-srs"><i class="fa fa-play"></i> Start Review Session</button><div id="srs-due-list" class="srs-list"></div></div>
+      <div class="glass-card mt-3"><div class="card-hdr"><span class="card-title">All Chapters in SRS</span></div><div id="srs-all-list" class="srs-list"></div></div>
+    </div>
+    <div class="srs-right">
+      <div class="glass-card"><div class="card-title mb-2">Status Distribution</div><div class="chart-wrap"><canvas id="chart-srs-status"></canvas></div></div>
+      <div class="glass-card mt-3"><div class="card-title mb-2">7-Day Forecast</div><div class="chart-wrap"><canvas id="chart-srs-forecast"></canvas></div></div>
+      <div class="glass-card mt-3"><div class="card-title mb-2">⚠ Difficult Chapters</div><div id="srs-weak-list"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FLASHCARDS -->
+<div id="page-flashcards" class="page">
+  <div class="page-hdr">
+    <div class="back-dash-wrap"><button class="back-btn" onclick="showPage('dashboard')"><i class="fa fa-arrow-left"></i></button><h1 class="page-title">Flashcards</h1></div>
+    <button class="btn-primary" id="btn-new-deck"><i class="fa fa-plus"></i> New Deck</button>
+  </div>
+  <div class="help-banner"><i class="fa fa-circle-info"></i> SM-2 spaced repetition flashcards. Create decks for each subject, add cards with front/back. Rate each card after review — Again, Hard, Good, or Easy — to control when it appears next.</div>
+  <div id="fc-review-mode" style="display:none">
+    <div class="review-hdr"><button class="back-btn" id="btn-exit-review"><i class="fa fa-times"></i> Exit</button><div class="review-prog-wrap"><div class="review-prog-bar"><div class="review-prog-fill" id="fc-prog-fill"></div></div><span id="fc-prog-txt">0/0</span></div></div>
+    <div class="fc-scene">
+      <div class="fc-wrapper" id="fc-wrapper"><div class="fc-card fc-front"><div class="fc-content" id="fc-front-content">Front</div></div><div class="fc-card fc-back"><div class="fc-content" id="fc-back-content">Back</div></div></div>
+      <button class="btn-primary show-ans-btn" id="btn-show-ans">Show Answer</button>
+      <div class="rating-btns" id="rating-btns" style="display:none">
+        <button class="rating-btn r-again" data-r="0"><span>Again</span><small id="ri-again">1d</small></button>
+        <button class="rating-btn r-hard" data-r="2"><span>Hard</span><small id="ri-hard">—</small></button>
+        <button class="rating-btn r-good" data-r="3"><span>Good</span><small id="ri-good">—</small></button>
+        <button class="rating-btn r-easy" data-r="4"><span>Easy</span><small id="ri-easy">—</small></button>
+      </div>
+    </div>
+  </div>
+  <div id="fc-deck-view">
+    <div class="fc-layout">
+      <div class="fc-left"><div class="glass-card"><div class="card-title mb-2">Decks</div><div id="deck-list" class="deck-list"></div><div class="empty-panel" id="deck-empty">No decks yet</div></div></div>
+      <div class="fc-right">
+        <div class="glass-card"><div class="card-hdr"><span class="card-title" id="deck-cards-title">Select a deck</span><div style="display:flex;gap:8px"><button class="btn-sm btn-secondary" id="btn-add-card" style="display:none"><i class="fa fa-plus"></i> Card</button><button class="btn-sm btn-primary" id="btn-start-fc" style="display:none"><i class="fa fa-play"></i> Review</button></div></div><div id="cards-in-deck" class="cards-grid"></div></div>
+        <div class="glass-card mt-3"><div class="card-hdr"><span class="card-title">Bulk Import</span></div><p class="help-txt">Paste tab-separated pairs (Question[TAB]Answer), one per line</p><textarea class="inp" id="bulk-import-txt" rows="4" placeholder="Photosynthesis&#9;Process plants use to convert sunlight to glucose"></textarea><button class="btn-secondary mt-2" id="btn-bulk-import"><i class="fa fa-upload"></i> Import</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTES -->
+<div id="page-notes" class="page notes-page">
+  <div class="notes-layout">
+    <!-- Left Panel: Tree -->
+    <div class="notes-left">
+      <div class="notes-left-hdr">
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="back-btn" onclick="showPage('dashboard')" style="width:34px;height:34px;flex-shrink:0"><i class="fa fa-arrow-left"></i></button>
+          <button class="btn-primary" style="flex:1;min-height:36px;font-size:0.82rem" id="btn-new-note"><i class="fa fa-plus"></i> New Note</button>
+        </div>
+        <input type="text" class="inp search-inp" id="note-search" placeholder="Search notes…">
+      </div>
+      <div class="note-tree" id="note-tree"><div class="empty-panel">No notes yet</div></div>
+    </div>
+
+    <!-- Center Panel: Editor -->
+    <div class="notes-center">
+      <div class="note-empty" id="note-empty"><i class="fa fa-file-alt"></i><h3>Select or Create a Note</h3><p>Use the panel on the left</p></div>
+      <div class="note-editor-wrap" id="note-editor-wrap" style="display:none">
+        <div class="note-toolbar-top">
+          <input type="text" class="note-title-inp" id="note-title-inp" placeholder="Note title…">
+          <div class="note-color-picker" id="note-color-picker">
+            <span style="font-size:0.72rem;color:var(--txt2)">Note color:</span>
+            <div class="nc-swatches">
+              <div class="nc-swatch active" style="background:transparent;border:2px dashed var(--border)" data-bg="" data-text="" onclick="setNoteColor(this)" title="Default"></div>
+              <div class="nc-swatch" style="background:#1a1a2e" data-bg="#1a1a2e" data-text="#e0e0ff" onclick="setNoteColor(this)" title="Dark Navy"></div>
+              <div class="nc-swatch" style="background:#0d2137" data-bg="#0d2137" data-text="#a8d8ea" onclick="setNoteColor(this)" title="Ocean"></div>
+              <div class="nc-swatch" style="background:#1a0533" data-bg="#1a0533" data-text="#e0b0ff" onclick="setNoteColor(this)" title="Purple Haze"></div>
+              <div class="nc-swatch" style="background:#0a2e1a" data-bg="#0a2e1a" data-text="#a8ffc4" onclick="setNoteColor(this)" title="Forest"></div>
+              <div class="nc-swatch" style="background:#2e1a00" data-bg="#2e1a00" data-text="#ffd8a8" onclick="setNoteColor(this)" title="Amber"></div>
+              <div class="nc-swatch" style="background:#2e0a0a" data-bg="#2e0a0a" data-text="#ffa8a8" onclick="setNoteColor(this)" title="Crimson"></div>
+              <div class="nc-swatch" style="background:#fff8e1" data-bg="#fff8e1" data-text="#333" onclick="setNoteColor(this)" title="Cream"></div>
+              <div class="nc-swatch" style="background:#e8f5e9" data-bg="#e8f5e9" data-text="#1a3d1a" onclick="setNoteColor(this)" title="Mint"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Math toolbar -->
+        <div class="math-toolbar" id="math-toolbar">
+          <span class="math-toolbar-label"><i class="fa fa-square-root-variable"></i> Insert:</span>
+          <button class="math-btn" onclick="insertMath('\\\\frac{a}{b}')" title="Fraction">a/b</button>
+          <button class="math-btn" onclick="insertMath('\\\\sqrt{x}')" title="Square root">√x</button>
+          <button class="math-btn" onclick="insertMath('x^{2}')" title="Superscript">x²</button>
+          <button class="math-btn" onclick="insertMath('\\\\int_{a}^{b}')" title="Integral">∫</button>
+          <button class="math-btn" onclick="insertMath('\\\\sum_{i=1}^{n}')" title="Sigma">Σ</button>
+          <button class="math-btn" onclick="insertMath('\\\\lim_{x \\\\to \\\\infty}')" title="Limit">lim</button>
+          <button class="math-btn" onclick="insertMath('\\\\vec{v}')" title="Vector">v⃗</button>
+          <button class="math-btn" onclick="insertMath('\\\\matrix{a & b \\\\\\\\ c & d}')" title="Matrix">[M]</button>
+          <button class="math-btn" onclick="insertMath('\\\\alpha')" title="Alpha">α</button>
+          <button class="math-btn" onclick="insertMath('\\\\beta')" title="Beta">β</button>
+          <button class="math-btn" onclick="insertMath('\\\\theta')" title="Theta">θ</button>
+          <button class="math-btn" onclick="insertMath('\\\\pi')" title="Pi">π</button>
+          <button class="math-btn" onclick="insertMath('\\\\Delta')" title="Delta">Δ</button>
+          <button class="math-btn" onclick="insertMath('\\\\lambda')" title="Lambda">λ</button>
+          <button class="math-btn" onclick="insertMath('\\\\infty')" title="Infinity">∞</button>
+          <button class="math-btn" onclick="openMathDialog()" title="Custom equation" style="background:rgba(124,111,255,0.2);color:#7c6fff">⊕ Custom</button>
+        </div>
+
+        <!-- Voice & Image recording bar -->
+        <div class="note-media-bar">
+          <button class="media-btn" id="btn-voice-rec" onclick="toggleVoiceRec()"><i class="fa fa-microphone"></i> <span id="voice-rec-label">Record Audio</span></button>
+          <div class="voice-indicator" id="voice-indicator" style="display:none"><div class="voice-dot"></div><span id="voice-timer">0:00</span></div>
+          <button class="media-btn" id="btn-img-attach" onclick="attachImage()"><i class="fa fa-image"></i> Add Image</button>
+          <input type="file" id="img-file-inp" accept="image/*" style="display:none" onchange="handleImageFile(event)">
+          <button class="media-btn" id="btn-camera" onclick="openCamera()"><i class="fa fa-camera"></i> Camera</button>
+          <button class="media-btn" onclick="togglePinNote()"><i class="fa fa-thumbtack" id="pin-ico"></i> <span id="pin-lbl">Pin</span></button>
+          <button class="media-btn" onclick="exportNoteAsPDF()"><i class="fa fa-file-pdf"></i> PDF</button>
+        </div>
+
+        <div id="note-editor" class="note-editor-body"></div>
+        <div id="audio-clips-list" class="audio-clips-list"></div>
+        <div class="editor-footer"><span id="note-wc">0 words</span><span class="save-status" id="save-status">—</span></div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Meta -->
+    <div class="notes-right" id="notes-right-panel">
+      <div class="note-meta-panel">
+        <h4 class="meta-title">Details</h4>
+        <label class="meta-label">Subject</label><select class="sel" id="note-subj-sel"></select>
+        <label class="meta-label">Book</label><select class="sel" id="note-book-sel"></select>
+        <label class="meta-label">Chapter</label><select class="sel" id="note-chap-sel"></select>
+        <label class="meta-label">Tags</label>
+        <div class="tags-wrap" id="tags-wrap"><input type="text" class="tag-inp" id="tag-inp" placeholder="Add tag + Enter"></div>
+        <div class="meta-dates"><div><small>Created</small><span id="note-created">—</span></div><div><small>Modified</small><span id="note-modified">—</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POMODORO -->
+<div id="page-pomodoro" class="page">
+  <div class="page-hdr">
+    <div class="back-dash-wrap"><button class="back-btn" onclick="showPage('dashboard')"><i class="fa fa-arrow-left"></i></button><h1 class="page-title">Pomodoro Timer</h1></div>
+  </div>
+  <div class="help-banner"><i class="fa fa-circle-info"></i> Work in focused intervals. Standard: 25min focus + 5min break. Every 4th break is longer (15min). Link sessions to subjects/books for detailed analytics. Tap Start — your phone will vibrate and play a sound when time is up.</div>
+  <div class="pomo-layout">
+    <div class="pomo-main">
+      <div class="pomo-tabs"><button class="pomo-tab active" data-mode="pomodoro">Pomodoro</button><button class="pomo-tab" data-mode="long">Long Focus</button><button class="pomo-tab" data-mode="custom">Custom</button></div>
+      <div class="timer-wrap">
+        <svg class="timer-svg" viewBox="0 0 220 220"><circle cx="110" cy="110" r="96" class="timer-track"/><circle cx="110" cy="110" r="96" class="timer-ring" id="pomo-ring" stroke-dasharray="603.19" stroke-dashoffset="0"/></svg>
+        <div class="timer-center"><div class="timer-phase" id="timer-phase">Focus</div><div class="timer-disp" id="timer-disp">25:00</div><div class="timer-sess" id="timer-sess">Session 1</div></div>
+      </div>
+      <div class="pomo-ctrls">
+        <button class="btn-pomo-ctrl" id="btn-pomo-reset" title="Reset"><i class="fa fa-redo"></i></button>
+        <button class="btn-pomo-main" id="btn-pomo-start"><i class="fa fa-play"></i></button>
+        <button class="btn-pomo-ctrl" id="btn-pomo-skip" title="Skip Phase"><i class="fa fa-forward"></i></button>
+      </div>
+      <div class="pomo-links">
+        <select class="sel" id="pomo-subj-sel"><option value="">Subject (optional)</option></select>
+        <select class="sel" id="pomo-book-sel"><option value="">Book</option></select>
+        <select class="sel" id="pomo-chap-sel"><option value="">Chapter</option></select>
+      </div>
+      <div id="custom-sliders" class="custom-sliders" style="display:none">
+        <div class="slider-row"><label>Focus: <span id="cs-focus-v">25</span> min</label><input type="range" min="5" max="90" value="25" id="cs-focus" class="range-inp"></div>
+        <div class="slider-row"><label>Short Break: <span id="cs-short-v">5</span> min</label><input type="range" min="1" max="30" value="5" id="cs-short" class="range-inp"></div>
+        <div class="slider-row"><label>Long Break: <span id="cs-long-v">15</span> min</label><input type="range" min="5" max="60" value="15" id="cs-long" class="range-inp"></div>
+      </div>
+    </div>
+    <div class="pomo-side">
+      <div class="glass-card"><div class="card-title mb-2">Today's Stats</div>
+        <div class="stat-rows">
+          <div class="stat-row"><span>Sessions</span><strong id="pomo-stat-sess">0</strong></div>
+          <div class="stat-row"><span>Focus Time</span><strong id="pomo-stat-focus">0 min</strong></div>
+          <div class="stat-row"><span>All Time</span><strong id="pomo-stat-all">0 h</strong></div>
+          <div class="stat-row"><span>Streak</span><strong id="pomo-stat-streak">0 days</strong></div>
+        </div>
+      </div>
+      <div class="glass-card mt-3"><div class="card-title mb-2">Session Log</div><div id="sess-log" class="sess-log"></div></div>
+      <div class="glass-card mt-3"><div class="card-title mb-2">Hourly Activity</div><div id="pomo-heatmap" class="heatmap-grid"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MIND MAP -->
+<div id="page-mindmap" class="page mindmap-page">
+  <div class="mm-hdr">
+    <div class="back-dash-wrap" style="flex:1">
+      <button class="back-btn" onclick="showPage('dashboard')"><i class="fa fa-arrow-left"></i></button>
+      <h1 class="page-title" style="margin:0;font-size:1.1rem">Mind Maps</h1>
+      <select class="sel" id="mm-selector" style="max-width:180px"></select>
+    </div>
+    <div class="mm-actions">
+      <button class="btn-sm btn-secondary" id="btn-mm-new"><i class="fa fa-plus"></i> New</button>
+      <button class="btn-sm btn-secondary" id="btn-mm-add-node"><i class="fa fa-circle-plus"></i> Node</button>
+      <button class="btn-sm btn-secondary" id="btn-mm-save"><i class="fa fa-save"></i> Save</button>
+      <button class="btn-sm btn-secondary" id="btn-mm-export"><i class="fa fa-image"></i> PNG</button>
+      <button class="btn-sm btn-primary" id="btn-ai-desc" style="display:none"><i class="fa fa-star"></i> AI</button>
+    </div>
+  </div>
+  <div class="mm-help-bar">
+    <span class="mm-hint"><kbd>Dbl-click</kbd> Add node</span>
+    <span class="mm-hint"><kbd>Drag</kbd> Move</span>
+    <span class="mm-hint"><kbd>Click 2 nodes</kbd> Connect</span>
+    <span class="mm-hint"><kbd>Del</kbd> Remove</span>
+    <span class="mm-hint"><kbd>Pinch/Scroll</kbd> Zoom</span>
+    <div class="mm-node-colors" id="mm-node-colors">
+      <span style="font-size:0.72rem;color:var(--txt2)">Node:</span>
+      <div class="nn-swatch" style="background:#7c6fff" data-color="#7c6fff" onclick="setMMNodeColor(this)"></div>
+      <div class="nn-swatch" style="background:#00e5ff" data-color="#00e5ff" onclick="setMMNodeColor(this)"></div>
+      <div class="nn-swatch" style="background:#ff6b9d" data-color="#ff6b9d" onclick="setMMNodeColor(this)"></div>
+      <div class="nn-swatch" style="background:#43e97b" data-color="#43e97b" onclick="setMMNodeColor(this)"></div>
+      <div class="nn-swatch" style="background:#ffa94d" data-color="#ffa94d" onclick="setMMNodeColor(this)"></div>
+      <div class="nn-swatch" style="background:#c9a84c" data-color="#c9a84c" onclick="setMMNodeColor(this)"></div>
+    </div>
+    <div class="mm-shape-btns">
+      <button class="mm-shape-btn active" data-shape="rect" onclick="setMMNodeShape(this,'rect')">▭ Rect</button>
+      <button class="mm-shape-btn" data-shape="oval" onclick="setMMNodeShape(this,'oval')">◯ Oval</button>
+      <button class="mm-shape-btn" data-shape="diamond" onclick="setMMNodeShape(this,'diamond')">◇ Diamond</button>
+    </div>
+  </div>
+  <div class="mm-canvas-wrap">
+    <canvas id="mm-canvas"></canvas>
+    <div class="ai-panel" id="ai-panel" style="display:none">
+      <div class="ai-panel-hdr"><span><i class="fa fa-star"></i> AI Insight</span><button class="btn-icon" onclick="document.getElementById('ai-panel').style.display='none'"><i class="fa fa-times"></i></button></div>
+      <div class="ai-panel-body" id="ai-panel-body">…</div>
+    </div>
+    <div class="mm-minimap" id="mm-minimap"><canvas id="mm-mini-canvas" width="120" height="80"></canvas></div>
+    <div class="mm-zoom-ctrls">
+      <button class="mm-zoom-btn" onclick="mmZoom(1.2)"><i class="fa fa-plus"></i></button>
+      <button class="mm-zoom-btn" onclick="mmZoom(0.8)"><i class="fa fa-minus"></i></button>
+      <button class="mm-zoom-btn" onclick="mmResetView()"><i class="fa fa-expand"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- PRAYER -->
+<div id="page-prayer" class="page">
+  <div class="page-hdr">
+    <div class="back-dash-wrap"><button class="back-btn" onclick="showPage('dashboard')"><i class="fa fa-arrow-left"></i></button><h1 class="page-title prayer-title"><i class="fa fa-mosque"></i> Prayer Chamber</h1></div>
+  </div>
+  <p class="page-sub" id="hijri-date" style="margin-bottom:16px">—</p>
+  <div class="help-banner"><i class="fa fa-circle-info"></i> Enter your city and tap Calculate. Notifications alert you at each prayer time. Track your daily prayers and build a streak. Qibla shows direction to Mecca from your location.</div>
+  <div class="glass-card mb-3">
+    <div class="card-hdr"><span class="card-title">Location & Method</span><button class="btn-sm btn-secondary" id="btn-detect-loc"><i class="fa fa-location-arrow"></i> Auto-detect</button></div>
+    <div class="form-grid2">
+      <div class="form-row"><label>City</label><input type="text" class="inp" id="prayer-city" placeholder="e.g. Dhaka"></div>
+      <div class="form-row"><label>Country</label><input type="text" class="inp" id="prayer-country" placeholder="e.g. Bangladesh"></div>
+      <div class="form-row"><label>Method</label>
+        <select class="sel" id="prayer-method">
+          <option value="MoonsightingCommittee" selected>Moonsighting Committee</option>
+          <option value="MuslimWorldLeague">Muslim World League</option>
+          <option value="NorthAmerica">ISNA (North America)</option>
+          <option value="Egyptian">Egyptian</option>
+          <option value="Karachi">Karachi</option>
+          <option value="UmmAlQura">Umm Al-Qura</option>
+          <option value="Dubai">Dubai</option>
+          <option value="Kuwait">Kuwait</option>
+          <option value="Singapore">Singapore</option>
+          <option value="Turkey">Turkey</option>
+        </select>
+      </div>
+      <div class="form-row"><label>Madhab</label><select class="sel" id="prayer-madhab"><option value="Shafi">Shafi</option><option value="Hanafi">Hanafi</option></select></div>
+    </div>
+    <button class="btn-primary" id="btn-calc-prayer"><i class="fa fa-calculator"></i> Calculate Prayer Times</button>
+  </div>
+  <div class="prayer-times-grid" id="prayer-times-grid"></div>
+  <div class="glass-card mb-3">
+    <div class="card-title mb-2">Qibla Direction</div>
+    <div class="qibla-wrap">
+      <div class="compass"><div class="compass-labels"><span class="cn">N</span><span class="ce">E</span><span class="cs">S</span><span class="cw">W</span></div><div class="compass-needle" id="compass-needle"><div class="needle-n"></div><div class="needle-s"></div></div><div class="kaaba-dot" id="kaaba-dot"><i class="fa fa-mosque"></i></div></div>
+      <div class="qibla-deg" id="qibla-deg">Set location first</div>
+    </div>
+  </div>
+  <div class="glass-card">
+    <div class="card-hdr"><span class="card-title">Prayer Tracker</span><span class="prayer-streak" id="prayer-streak">🔥 0 days</span></div>
+    <div class="tracker-wrap" id="prayer-tracker"></div>
+  </div>
+</div>
+
+<!-- INTERNET -->
+<div id="page-internet" class="page internet-page">
+  <div class="inet-bg"></div>
+  <iframe id="inet-frame" src="about:blank" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"></iframe>
+  <div class="inet-controls" id="inet-controls">
+    <button class="inet-btn" onclick="showPage('dashboard')" title="Home"><i class="fa fa-arrow-left"></i></button>
+    <button class="inet-btn" id="inet-back-btn"><i class="fa fa-chevron-left"></i></button>
+    <button class="inet-btn" id="inet-fwd-btn"><i class="fa fa-chevron-right"></i></button>
+    <button class="inet-btn" id="inet-refresh-btn"><i class="fa fa-rotate-right"></i></button>
+    <input type="text" class="inet-url-inp" id="inet-url" placeholder="Search or enter URL…">
+    <button class="inet-btn inet-go" id="inet-go-btn"><i class="fa fa-arrow-right"></i></button>
+    <button class="inet-btn" id="inet-bmark-btn" title="Bookmark"><i class="fa fa-bookmark"></i></button>
+    <button class="inet-btn" id="inet-bmarks-toggle" title="Bookmarks"><i class="fa fa-list"></i></button>
+  </div>
+  <div class="inet-bmarks-panel glass-card" id="inet-bmarks-panel" style="display:none">
+    <div class="card-hdr"><span class="card-title">Bookmarks</span><button class="btn-icon" onclick="document.getElementById('inet-bmarks-panel').style.display='none'"><i class="fa fa-times"></i></button></div>
+    <div id="bmarks-list"></div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="page-analytics" class="page">
+  <div class="page-hdr">
+    <div class="back-dash-wrap"><button class="back-btn" onclick="showPage('dashboard')"><i class="fa fa-arrow-left"></i></button><h1 class="page-title">Analytics</h1></div>
+    <button class="btn-secondary" id="btn-edit-goals"><i class="fa fa-bullseye"></i> Goals</button>
+  </div>
+  <div class="help-banner"><i class="fa fa-circle-info"></i> Visual breakdown of your study habits. The heatmap shows study intensity across the year. Retention shows how well your flashcard reviews are going. Set weekly/monthly goals to track progress.</div>
+  <div class="analytics-top">
+    <div class="glass-card score-card"><div class="card-title">Consistency</div><div class="chart-wrap" style="height:100px"><canvas id="chart-consistency"></canvas></div><div class="score-val" id="score-val">0</div><div class="score-lbl" id="score-lbl">—</div></div>
+    <div class="glass-card"><div class="card-title mb-2">Insights</div><div id="insights-list" class="insights-list"></div></div>
+  </div>
+  <div class="glass-card mb-3"><div class="card-hdr"><span class="card-title">Goals Progress</span></div><div class="goals-progress"><div class="goal-item"><div class="goal-lbl">Weekly Hours</div><div class="goal-bar-row"><div class="goal-bar"><div class="goal-fill" id="gf-hours"></div></div><span id="gt-hours">0/0h</span></div></div><div class="goal-item"><div class="goal-lbl">Monthly Chapters</div><div class="goal-bar-row"><div class="goal-bar"><div class="goal-fill gf2" id="gf-chaps"></div></div><span id="gt-chaps">0/0</span></div></div></div></div>
+  <div class="analytics-charts">
+    <div class="glass-card full-w"><div class="card-title mb-2">Study Heatmap (52 Weeks)</div><div class="heatmap-wrap" id="analytics-heatmap"></div></div>
+    <div class="glass-card"><div class="card-title mb-2">Subject Distribution</div><div class="chart-wrap"><canvas id="chart-an-subjects"></canvas></div></div>
+    <div class="glass-card"><div class="card-title mb-2">Chapter Completion (30d)</div><div class="chart-wrap"><canvas id="chart-completion"></canvas></div></div>
+    <div class="glass-card"><div class="card-title mb-2">Flashcard Retention</div><div class="chart-wrap"><canvas id="chart-retention"></canvas></div></div>
+    <div class="glass-card"><div class="card-title mb-2">SRS Performance</div><div class="chart-wrap"><canvas id="chart-srs-perf"></canvas></div></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="page-settings" class="page">
+  <div class="page-hdr">
+    <div class="back-dash-wrap"><button class="back-btn" onclick="showPage('dashboard')"><i class="fa fa-arrow-left"></i></button><h1 class="page-title">Settings</h1></div>
+  </div>
+  <div class="help-banner"><i class="fa fa-circle-info"></i> Customize VENOLK1 to your preferences. Set your profile, alarms, appearance, exam countdown, and manage all your data from here.</div>
+  <div class="glass-card profile-card mb-3">
+    <div class="profile-top">
+      <div class="avatar-wrap"><div class="avatar" id="profile-avatar">🎓</div><button class="btn-sm btn-secondary" id="btn-change-avatar">Change</button></div>
+      <div class="profile-fields">
+        <input type="text" class="inp profile-name-inp" id="profile-name" placeholder="Your Name" value="Student">
+        <select class="sel" id="profile-type"><option>School Student</option><option>College Student</option><option selected>University Student</option><option>Self-Learner</option><option>Professional</option></select>
+        <input type="text" class="inp" id="profile-institution" placeholder="Institution (optional)">
+        <textarea class="inp" id="profile-bio" rows="2" placeholder="Your study motivation…"></textarea>
+      </div>
+    </div>
+    <div class="profile-stats"><div class="pstat"><span id="ps-hours">0</span><small>Hours</small></div><div class="pstat"><span id="ps-books">0</span><small>Books</small></div><div class="pstat"><span id="ps-streak">0</span><small>Streak</small></div><div class="pstat"><span id="ps-level">1</span><small>Level</small></div></div>
+  </div>
+  <div class="glass-card mb-3"><div class="card-title mb-2">Achievements</div><div class="achievements-grid" id="achievements-grid"></div></div>
+  <div class="glass-card settings-section mb-3">
+    <div class="section-title"><i class="fa fa-palette"></i> Appearance</div>
+    <div class="setting-row"><span>Theme</span><div class="toggle-group"><button class="tog" id="btn-dark" onclick="setTheme('dark')"><i class="fa fa-moon"></i> Dark</button><button class="tog" id="btn-light" onclick="setTheme('light')"><i class="fa fa-sun"></i> Light</button></div></div>
+    <div class="setting-row"><span>Accent Color</span><div class="swatches" id="accent-swatches"><div class="swatch active" style="background:#7c6fff" data-color="#7c6fff"></div><div class="swatch" style="background:#00e5ff" data-color="#00e5ff"></div><div class="swatch" style="background:#ff6b9d" data-color="#ff6b9d"></div><div class="swatch" style="background:#43e97b" data-color="#43e97b"></div><div class="swatch" style="background:#ffa94d" data-color="#ffa94d"></div><div class="swatch" style="background:#f72585" data-color="#f72585"></div></div></div>
+    <div class="setting-row"><span>Font Size</span><div class="toggle-group"><button class="tog" onclick="setFontSize('sm')">Small</button><button class="tog active" onclick="setFontSize('md')">Medium</button><button class="tog" onclick="setFontSize('lg')">Large</button></div></div>
+    <div class="setting-row"><span>Reduce Animations</span><label class="sw"><input type="checkbox" id="tog-anim"><span class="sw-slider"></span></label></div>
+  </div>
+  <div class="glass-card settings-section mb-3">
+    <div class="section-title"><i class="fa fa-bell"></i> Notifications & Alerts</div>
+    <div class="setting-row"><span>Enable Notifications</span><label class="sw"><input type="checkbox" id="tog-notif" onchange="handleNotifToggle(this.checked)"><span class="sw-slider"></span></label></div>
+    <div class="setting-row"><span>Pomodoro Alerts</span><label class="sw"><input type="checkbox" id="tog-pomo-alerts" checked><span class="sw-slider"></span></label></div>
+    <div class="setting-row"><span>Prayer Notifications</span><label class="sw"><input type="checkbox" id="tog-prayer-notif" checked><span class="sw-slider"></span></label></div>
+    <div class="setting-row"><span>Auto-start next phase</span><label class="sw"><input type="checkbox" id="tog-autostart"><span class="sw-slider"></span></label></div>
+    <div class="setting-row"><span>Alarm Sound Volume</span><div class="slider-row"><input type="range" min="0" max="100" value="80" id="set-alarm-vol" class="range-inp"><span id="set-alarm-vol-v">80%</span></div></div>
+  </div>
+  <div class="glass-card settings-section mb-3">
+    <div class="section-title"><i class="fa fa-clock"></i> Pomodoro Defaults</div>
+    <div class="setting-row"><span>Focus Duration</span><div class="slider-row"><input type="range" min="5" max="90" value="25" id="set-focus" class="range-inp"><span id="set-focus-v">25 min</span></div></div>
+    <div class="setting-row"><span>Short Break</span><div class="slider-row"><input type="range" min="1" max="30" value="5" id="set-short" class="range-inp"><span id="set-short-v">5 min</span></div></div>
+    <div class="setting-row"><span>Long Break</span><div class="slider-row"><input type="range" min="5" max="60" value="15" id="set-long" class="range-inp"><span id="set-long-v">15 min</span></div></div>
+  </div>
+  <div class="glass-card settings-section mb-3">
+    <div class="section-title"><i class="fa fa-graduation-cap"></i> Exam Countdown</div>
+    <div class="setting-row"><span>Exam Name</span><input type="text" class="inp" id="set-exam-name" placeholder="e.g. Final Exams" style="max-width:220px"></div>
+    <div class="setting-row"><span>Exam Date</span><input type="date" class="inp" id="set-exam-date" style="max-width:200px"></div>
+    <div class="setting-row"><span>Daily Hours Goal</span><div class="slider-row"><input type="range" min="1" max="16" value="4" id="set-daily-hrs" class="range-inp"><span id="set-daily-hrs-v">4 hrs</span></div></div>
+  </div>
+  <div class="glass-card settings-section mb-3">
+    <div class="section-title"><i class="fa fa-bell"></i> Alarms</div>
+    <button class="btn-sm btn-primary" id="btn-add-alarm"><i class="fa fa-plus"></i> Add Alarm</button>
+    <div id="alarms-list" class="alarms-list mt-3"></div>
+  </div>
+  <div class="glass-card settings-section mb-3">
+    <div class="section-title"><i class="fa fa-database"></i> Data Management</div>
+    <div class="data-btns">
+      <button class="btn-secondary" id="btn-export-data"><i class="fa fa-download"></i> Export All Data</button>
+      <button class="btn-secondary" id="btn-import-data"><i class="fa fa-upload"></i> Import Backup</button>
+      <input type="file" id="import-file-inp" accept=".json" style="display:none">
+      <button class="btn-secondary" id="btn-export-notes-pdf"><i class="fa fa-file-pdf"></i> Export All Notes PDF</button>
+      <button class="btn-danger" id="btn-clear-all"><i class="fa fa-trash"></i> Clear All Data</button>
+    </div>
+  </div>
+  <div class="glass-card settings-section">
+    <div class="section-title"><i class="fa fa-keyboard"></i> Keyboard Shortcuts</div>
+    <table class="shortcuts-tbl">
+      <tr><td><kbd>Ctrl+K</kbd></td><td>Global Search</td></tr>
+      <tr><td><kbd>Ctrl+1–9</kbd></td><td>Navigate pages</td></tr>
+      <tr><td><kbd>Ctrl+N</kbd></td><td>New Note</td></tr>
+      <tr><td><kbd>Ctrl+S</kbd></td><td>Save current note</td></tr>
+      <tr><td><kbd>Ctrl+P</kbd></td><td>Start/Pause Pomodoro</td></tr>
+      <tr><td><kbd>Ctrl+Shift+L</kbd></td><td>Toggle Light/Dark theme</td></tr>
+      <tr><td><kbd>Escape</kbd></td><td>Close modal/search</td></tr>
+      <tr><td><kbd>Delete</kbd></td><td>Delete selected mind map node</td></tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- ADD MANAGER -->
+<div id="page-addmgr" class="page">
+  <div class="page-hdr">
+    <div class="back-dash-wrap">
+      <button class="back-btn" onclick="showPage('dashboard')"><i class="fa fa-arrow-left"></i></button>
+      <h1 class="page-title">➕ Add Manager</h1>
+    </div>
+  </div>
+  <div class="help-banner"><i class="fa fa-circle-info"></i> Add books, alarms, events, tasks, flashcard decks, and more — all from one place. Fill in the form and hit Save.</div>
+
+  <!-- SECTION TABS -->
+  <div class="amgr-tabs" id="amgr-tabs">
+    <button class="amgr-tab active" data-sec="book" onclick="amgrSwitch('book')">📚 Book</button>
+    <button class="amgr-tab" data-sec="alarm" onclick="amgrSwitch('alarm')">⏰ Alarm</button>
+    <button class="amgr-tab" data-sec="event" onclick="amgrSwitch('event')">📅 Event</button>
+    <button class="amgr-tab" data-sec="task" onclick="amgrSwitch('task')">📋 Task</button>
+    <button class="amgr-tab" data-sec="deck" onclick="amgrSwitch('deck')">🃏 Deck</button>
+    <button class="amgr-tab" data-sec="card" onclick="amgrSwitch('card')">🎴 Card</button>
+    <button class="amgr-tab" data-sec="subject" onclick="amgrSwitch('subject')">🏷️ Subject</button>
+    <button class="amgr-tab" data-sec="map" onclick="amgrSwitch('map')">🗺️ Map</button>
+    <button class="amgr-tab" data-sec="data" onclick="amgrSwitch('data')">🗄️ Data</button>
+  </div>
+
+  <!-- ── ADD BOOK ── -->
+  <div class="amgr-sec" id="amgr-book">
+    <div class="glass-card">
+      <div class="card-title mb-3"><i class="fa fa-book-open" style="color:#7c6fff"></i> Add New Book</div>
+      <div class="amgr-form">
+        <div class="amgr-row"><label>Title <span class="req">*</span></label><input class="inp" id="am-book-title" placeholder="e.g. Organic Chemistry"></div>
+        <div class="amgr-row"><label>Author</label><input class="inp" id="am-book-author" placeholder="e.g. Morrison & Boyd"></div>
+        <div class="amgr-row"><label>Subject</label>
+          <div style="display:flex;gap:8px">
+            <select class="sel" id="am-book-subj" style="flex:1"></select>
+            <input class="inp" id="am-book-newsubj" placeholder="Or type new subject" style="flex:1">
+          </div>
+        </div>
+        <div class="amgr-row2">
+          <div><label>Chapters</label><input class="inp" type="number" id="am-book-chaps" value="10" min="1" max="200"></div>
+          <div><label>Priority</label>
+            <select class="sel" id="am-book-priority">
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+        </div>
+        <div class="amgr-row2">
+          <div><label>Start Date</label><input class="inp" type="date" id="am-book-start"></div>
+          <div><label>Target Date</label><input class="inp" type="date" id="am-book-target"></div>
+        </div>
+        <div class="amgr-row"><label>Color</label>
+          <div class="amgr-colors" id="am-book-colors">
+            <div class="amgr-color active" data-color="#7c6fff" style="background:#7c6fff"></div>
+            <div class="amgr-color" data-color="#00e5ff" style="background:#00e5ff"></div>
+            <div class="amgr-color" data-color="#ff6b9d" style="background:#ff6b9d"></div>
+            <div class="amgr-color" data-color="#43e97b" style="background:#43e97b"></div>
+            <div class="amgr-color" data-color="#ffa94d" style="background:#ffa94d"></div>
+            <div class="amgr-color" data-color="#f72585" style="background:#f72585"></div>
+          </div>
+        </div>
+        <button class="btn-primary amgr-save" onclick="amgrSaveBook()"><i class="fa fa-plus"></i> Add Book</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADD ALARM ── -->
+  <div class="amgr-sec" id="amgr-alarm" style="display:none">
+    <div class="glass-card">
+      <div class="card-title mb-3"><i class="fa fa-bell" style="color:#ffa94d"></i> Add Alarm</div>
+      <div class="amgr-form">
+        <div class="amgr-row"><label>Alarm Title <span class="req">*</span></label><input class="inp" id="am-alarm-title" placeholder="e.g. Morning Study Session"></div>
+        <div class="amgr-row2">
+          <div><label>Time <span class="req">*</span></label><input class="inp" type="time" id="am-alarm-time" value="08:00"></div>
+          <div><label>Repeat</label>
+            <select class="sel" id="am-alarm-repeat">
+              <option value="none">Once</option>
+              <option value="daily" selected>Daily</option>
+              <option value="weekly">Weekly</option>
+            </select>
+          </div>
+        </div>
+        <div class="amgr-row2">
+          <div><label>Type</label>
+            <select class="sel" id="am-alarm-type">
+              <option value="study">Study</option>
+              <option value="break">Break</option>
+              <option value="review">Review SRS</option>
+              <option value="prayer">Prayer</option>
+              <option value="wakeup">Wake-up</option>
+            </select>
+          </div>
+          <div><label>Snooze</label>
+            <select class="sel" id="am-alarm-snooze">
+              <option value="5">5 min</option>
+              <option value="10" selected>10 min</option>
+              <option value="15">15 min</option>
+              <option value="30">30 min</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-primary amgr-save" onclick="amgrSaveAlarm()"><i class="fa fa-plus"></i> Add Alarm</button>
+      </div>
+    </div>
+    <div class="glass-card mt-3">
+      <div class="card-hdr"><span class="card-title">Your Alarms</span></div>
+      <div id="am-alarms-list" class="alarms-list"></div>
+    </div>
+  </div>
+
+  <!-- ── ADD EVENT ── -->
+  <div class="amgr-sec" id="amgr-event" style="display:none">
+    <div class="glass-card">
+      <div class="card-title mb-3"><i class="fa fa-calendar" style="color:#00e5ff"></i> Add Calendar Event</div>
+      <div class="amgr-form">
+        <div class="amgr-row"><label>Topic <span class="req">*</span></label><input class="inp" id="am-ev-topic" placeholder="e.g. Biology Chapter 5 Revision"></div>
+        <div class="amgr-row"><label>Subject</label><select class="sel" id="am-ev-subj"></select></div>
+        <div class="amgr-row2">
+          <div><label>Date <span class="req">*</span></label><input class="inp" type="date" id="am-ev-date"></div>
+          <div><label>Time</label><input class="inp" type="time" id="am-ev-time" value="09:00"></div>
+        </div>
+        <div class="amgr-row"><label>Type</label>
+          <div style="display:flex;gap:10px">
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer"><input type="radio" name="ev-type" value="session" checked> Study Session</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer"><input type="radio" name="ev-type" value="exam"> ⚠️ Exam</label>
+          </div>
+        </div>
+        <button class="btn-primary amgr-save" onclick="amgrSaveEvent()"><i class="fa fa-plus"></i> Add Event</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADD ROUTINE TASK ── -->
+  <div class="amgr-sec" id="amgr-task" style="display:none">
+    <div class="glass-card">
+      <div class="card-title mb-3"><i class="fa fa-calendar-check" style="color:#43e97b"></i> Add Routine Task</div>
+      <div class="amgr-form">
+        <div class="amgr-row"><label>Task Name <span class="req">*</span></label><input class="inp" id="am-task-name" placeholder="e.g. Study Physics"></div>
+        <div class="amgr-row2">
+          <div><label>Day <span class="req">*</span></label>
+            <select class="sel" id="am-task-day">
+              <option>Mon</option><option>Tue</option><option>Wed</option>
+              <option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
+            </select>
+          </div>
+          <div><label>Time</label><input class="inp" type="time" id="am-task-time" value="08:00"></div>
+        </div>
+        <div class="amgr-row2">
+          <div><label>Duration (min)</label><input class="inp" type="number" id="am-task-dur" value="60" min="5" max="480"></div>
+          <div><label>Subject</label><select class="sel" id="am-task-subj"></select></div>
+        </div>
+        <button class="btn-primary amgr-save" onclick="amgrSaveTask()"><i class="fa fa-plus"></i> Add Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADD FLASHCARD DECK ── -->
+  <div class="amgr-sec" id="amgr-deck" style="display:none">
+    <div class="glass-card">
+      <div class="card-title mb-3"><i class="fa fa-layer-group" style="color:#f72585"></i> New Flashcard Deck</div>
+      <div class="amgr-form">
+        <div class="amgr-row"><label>Deck Name <span class="req">*</span></label><input class="inp" id="am-deck-name" placeholder="e.g. Cell Biology Terms"></div>
+        <div class="amgr-row"><label>Subject</label><select class="sel" id="am-deck-subj"></select></div>
+        <button class="btn-primary amgr-save" onclick="amgrSaveDeck()"><i class="fa fa-plus"></i> Create Deck</button>
+      </div>
+    </div>
+    <div class="glass-card mt-3">
+      <div class="card-hdr"><span class="card-title">Your Decks</span></div>
+      <div id="am-decks-list"></div>
+    </div>
+  </div>
+
+  <!-- ── ADD FLASHCARD ── -->
+  <div class="amgr-sec" id="amgr-card" style="display:none">
+    <div class="glass-card">
+      <div class="card-title mb-3"><i class="fa fa-clone" style="color:#00e5ff"></i> Add Flashcard</div>
+      <div class="amgr-form">
+        <div class="amgr-row"><label>Deck <span class="req">*</span></label><select class="sel" id="am-card-deck"></select></div>
+        <div class="amgr-row"><label>Front (Question) <span class="req">*</span></label><textarea class="inp" id="am-card-front" rows="3" placeholder="Question or term..."></textarea></div>
+        <div class="amgr-row"><label>Back (Answer) <span class="req">*</span></label><textarea class="inp" id="am-card-back" rows="3" placeholder="Answer or definition..."></textarea></div>
+        <button class="btn-primary amgr-save" onclick="amgrSaveCard()"><i class="fa fa-plus"></i> Add Card</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADD SUBJECT ── -->
+  <div class="amgr-sec" id="amgr-subject" style="display:none">
+    <div class="glass-card">
+      <div class="card-title mb-3"><i class="fa fa-tag" style="color:#ffa94d"></i> Manage Subjects</div>
+      <div class="amgr-form">
+        <div class="amgr-row"><label>New Subject Name <span class="req">*</span></label><input class="inp" id="am-subj-name" placeholder="e.g. Biochemistry"></div>
+        <button class="btn-primary amgr-save" onclick="amgrSaveSubject()"><i class="fa fa-plus"></i> Add Subject</button>
+      </div>
+    </div>
+    <div class="glass-card mt-3">
+      <div class="card-hdr"><span class="card-title">Your Subjects</span></div>
+      <div id="am-subj-list"></div>
+    </div>
+  </div>
+
+
+  <!-- ── ADD MIND MAP ── -->
+  <div class="amgr-sec" id="amgr-map" style="display:none">
+    <div class="glass-card">
+      <div class="card-title mb-3"><i class="fa fa-sitemap" style="color:#7c6fff"></i> New Mind Map</div>
+      <div class="amgr-form">
+        <div class="amgr-row"><label>Map Name <span class="req">*</span></label><input class="inp" id="am-map-name" placeholder="e.g. Chapter 3 — Cell Biology"></div>
+        <button class="btn-primary amgr-save" onclick="amgrCreateMap()"><i class="fa fa-plus"></i> Create Map</button>
+      </div>
+    </div>
+    <div class="glass-card mt-3">
+      <div class="card-hdr"><span class="card-title">Your Mind Maps</span></div>
+      <div id="am-maps-list"></div>
+    </div>
+  </div>
+
+  <!-- ── DATA MANAGEMENT ── -->
+  <div class="amgr-sec" id="amgr-data" style="display:none">
+    <div class="glass-card">
+      <div class="card-title mb-3"><i class="fa fa-database" style="color:#ff6b9d"></i> Data Management</div>
+      <div class="amgr-data-grid">
+        <button class="amgr-data-btn export" onclick="amgrExportData()">
+          <i class="fa fa-download"></i>
+          <span>Export Backup</span>
+          <small>Download all data as JSON</small>
+        </button>
+        <button class="amgr-data-btn import" onclick="document.getElementById('am-import-inp').click()">
+          <i class="fa fa-upload"></i>
+          <span>Import Backup</span>
+          <small>Restore from JSON file</small>
+        </button>
+        <button class="amgr-data-btn pdf" onclick="exportAllNotesPDF()">
+          <i class="fa fa-file-pdf"></i>
+          <span>Export Notes PDF</span>
+          <small>All notes as one PDF</small>
+        </button>
+        <button class="amgr-data-btn danger" onclick="amgrClearData()">
+          <i class="fa fa-trash"></i>
+          <span>Clear All Data</span>
+          <small>Permanently delete everything</small>
+        </button>
+      </div>
+      <input type="file" id="am-import-inp" accept=".json" style="display:none" onchange="amgrImportData(event)">
+    </div>
+    <div class="glass-card mt-3">
+      <div class="card-title mb-2">Storage Summary</div>
+      <div id="am-storage-info"></div>
+    </div>
+  </div>
+
+</div>
+
+</main><!-- end #main-content -->
+
+<!-- DOCK -->
+<nav id="dock">
+  <div class="dock-scroll" id="dock-scroll">
+    <button class="dock-btn active" data-page="dashboard" onclick="showPage('dashboard')"><i class="fa fa-home"></i><span>Home</span></button>
+    <button class="dock-btn" data-page="calendar" onclick="showPage('calendar')"><i class="fa fa-calendar"></i><span>Cal</span></button>
+    <button class="dock-btn" data-page="books" onclick="showPage('books')"><i class="fa fa-book-open"></i><span>Books</span></button>
+    <button class="dock-btn" data-page="routine" onclick="showPage('routine')"><i class="fa fa-calendar-check"></i><span>Routine</span></button>
+    <button class="dock-btn" data-page="srs" onclick="showPage('srs')"><i class="fa fa-brain"></i><span>SRS</span><span class="dock-badge" id="dock-srs-badge" style="display:none">0</span></button>
+    <button class="dock-btn" data-page="flashcards" onclick="showPage('flashcards')"><i class="fa fa-layer-group"></i><span>Cards</span></button>
+    <button class="dock-btn" data-page="notes" onclick="showPage('notes')"><i class="fa fa-sticky-note"></i><span>Notes</span></button>
+    <button class="dock-btn" data-page="pomodoro" onclick="showPage('pomodoro')"><i class="fa fa-clock"></i><span>Pomo</span></button>
+    <button class="dock-btn" data-page="mindmap" onclick="showPage('mindmap')"><i class="fa fa-sitemap"></i><span>Map</span></button>
+    <button class="dock-btn" data-page="prayer" onclick="showPage('prayer')"><i class="fa fa-mosque"></i><span>Prayer</span></button>
+    <button class="dock-btn" data-page="internet" onclick="showPage('internet')"><i class="fa fa-globe"></i><span>Web</span></button>
+    <button class="dock-btn" data-page="analytics" onclick="showPage('analytics')"><i class="fa fa-chart-line"></i><span>Stats</span></button>
+    <button class="dock-btn" data-page="addmgr" onclick="showPage('addmgr')"><i class="fa fa-plus-circle"></i><span>Add</span></button>
+    <button class="dock-btn" data-page="settings" onclick="showPage('settings')"><i class="fa fa-gear"></i><span>Settings</span></button>
+  </div>
+</nav>
+
+<!-- ===== MODAL (FIXED FOR ANDROID) ===== -->
+<div id="modal-overlay" style="display:none">
+  <div class="modal-box" id="modal-box">
+    <div class="modal-hdr"><h3 id="modal-title"></h3><button class="modal-close" id="modal-close"><i class="fa fa-times"></i></button></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<!-- SEARCH OVERLAY -->
+<div id="search-overlay" style="display:none">
+  <div class="search-inner">
+    <div class="search-box"><i class="fa fa-search"></i><input type="text" id="search-inp" placeholder="Search books, chapters, notes, cards…" autocomplete="off"><button class="btn-icon" onclick="closeSearch()"><i class="fa fa-times"></i></button></div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="onboarding-overlay" style="display:none">
+  <div class="ob-modal">
+    <div class="ob-slides" id="ob-slides">
+      <div class="ob-slide active"><div class="ob-icon">🎓</div><h2>Welcome to <span class="grad-text">VENOLK1</span></h2><p>Your complete study management platform — books, notes, spaced repetition, prayer times, Pomodoro, mind maps and more, all in one app.</p></div>
+      <div class="ob-slide"><div class="ob-icon">📚</div><h2>Track Your <span class="grad-text">Books</span></h2><p>Add books and chapters. Complete 4 stages per chapter: <strong>Reading → MCQ → CQ → Exam</strong>. Finishing all 4 automatically adds it to Spaced Repetition.</p></div>
+      <div class="ob-slide"><div class="ob-icon">⏱</div><h2>Focus with <span class="grad-text">Pomodoro</span></h2><p>Work in focused 25-minute bursts. Your phone will vibrate and play a sound when time is up. Link sessions to subjects for detailed study analytics.</p></div>
+      <div class="ob-slide"><div class="ob-icon">🧠</div><h2>Spaced <span class="grad-text">Repetition</span></h2><p>The SM-2 algorithm schedules your chapter and flashcard reviews at the optimal time — harder items appear more often, mastered items less often.</p></div>
+      <div class="ob-slide"><div class="ob-icon">🕌</div><h2>Prayer & <span class="grad-text">Routine</span></h2><p>The Prayer Chamber calculates accurate Salah times for your city. Use the Weekly Routine planner to build a consistent study schedule around your prayers.</p></div>
+    </div>
+    <div class="ob-footer"><div class="ob-dots" id="ob-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div style="display:flex;gap:10px"><button class="btn-secondary" id="ob-prev" style="display:none">← Back</button><button class="btn-primary" id="ob-next">Next →</button></div></div>
+  </div>
+</div>
+
+<!-- ALARM MODAL -->
+<div id="alarm-modal" style="display:none">
+  <div class="alarm-inner">
+    <div class="alarm-icon-wrap"><i class="fa fa-bell alarm-bell"></i></div>
+    <h2 id="alarm-title">Alarm</h2>
+    <p id="alarm-msg">Time!</p>
+    <div id="wakeup-tasks" style="display:none">
+      <p class="wakeup-prompt">Complete one task to stop this alarm:</p>
+      <div class="wakeup-opts">
+        <button class="wakeup-opt" id="wu-srs">⚡ Review an SRS Chapter</button>
+        <button class="wakeup-opt" id="wu-pomo">⏱ Start a 5-min Focus</button>
+        <button class="wakeup-opt" id="wu-note">✏️ Write a Morning Note</button>
+      </div>
+      <input type="text" class="inp" id="wu-note-inp" placeholder="What will you study today?" style="display:none;margin-top:8px">
+    </div>
+    <div class="alarm-btns">
+      <button class="btn-secondary" id="btn-alarm-snooze">Snooze 10 min</button>
+      <button class="btn-danger" id="btn-alarm-stop">Stop</button>
+    </div>
+  </div>
+</div>
+
+<!-- MATH DIALOG -->
+<div id="math-dialog" style="display:none">
+  <div class="math-dialog-inner">
+    <div class="math-dlg-hdr"><span><i class="fa fa-square-root-variable"></i> Insert Equation (LaTeX)</span><button class="btn-icon" onclick="closeMathDialog()"><i class="fa fa-times"></i></button></div>
+    <input type="text" class="inp" id="math-inp" placeholder="e.g. \frac{d}{dx}[x^n] = nx^{n-1}">
+    <div class="math-preview" id="math-preview"></div>
+    <div class="math-presets">
+      <span style="font-size:0.72rem;color:var(--txt2)">Presets:</span>
+      <button class="math-preset-btn" onclick="setMathPreset('\\\\frac{-b \\\\pm \\\\sqrt{b^2-4ac}}{2a}')">Quadratic</button>
+      <button class="math-preset-btn" onclick="setMathPreset('E = mc^2')">E=mc²</button>
+      <button class="math-preset-btn" onclick="setMathPreset('F = ma')">F=ma</button>
+      <button class="math-preset-btn" onclick="setMathPreset('PV = nRT')">Ideal Gas</button>
+      <button class="math-preset-btn" onclick="setMathPreset('\\\\nabla^2 \\\\phi = 0')">Laplace</button>
+      <button class="math-preset-btn" onclick="setMathPreset('\\\\int_{-\\\\infty}^{\\\\infty} e^{-x^2} dx = \\\\sqrt{\\\\pi}')">Gaussian</button>
+      <button class="math-preset-btn" onclick="setMathPreset('\\\\sum_{n=0}^{\\\\infty} \\\\frac{x^n}{n!} = e^x')">Taylor e^x</button>
+      <button class="math-preset-btn" onclick="setMathPreset('\\\\vec{F} = q(\\\\vec{E} + \\\\vec{v} \\\\times \\\\vec{B})')">Lorentz</button>
+    </div>
+    <div class="math-dlg-footer">
+      <button class="btn-secondary" onclick="closeMathDialog()">Cancel</button>
+      <button class="btn-primary" onclick="insertMathFromDialog()"><i class="fa fa-check"></i> Insert</button>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

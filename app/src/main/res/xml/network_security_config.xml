@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/xml/network_security_config.xml -->
+<network-security-config>
+    <!-- Allow all HTTPS traffic -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Local file:// assets don't need network -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">fonts.googleapis.com</domain>
+        <domain includeSubdomains="true">cdnjs.cloudflare.com</domain>
+        <domain includeSubdomains="true">cdn.jsdelivr.net</domain>
+        <domain includeSubdomains="true">cdn.quilljs.com</domain>
+    </domain-config>
+</network-security-config>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/splash_bg"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp">
+
+    <ImageView
+        android:id="@+id/splash_logo"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:src="@drawable/splash_logo"
+        android:contentDescription="VENOLK1 logo"
+        android:alpha="0" />
+
+    <TextView
+        android:id="@+id/splash_wordmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="VENOLK1"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        android:textColor="#7C6FFF"
+        android:letterSpacing="0.08"
+        android:layout_marginTop="16dp"
+        android:alpha="0"
+        android:fontFamily="sans-serif-medium" />
+
+    <TextView
+        android:id="@+id/splash_tagline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your Complete Study Companion"
+        android:textSize="13sp"
+        android:textColor="#8888BB"
+        android:layout_marginTop="6dp"
+        android:alpha="0" />
+
+</LinearLayout>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Main app theme: fullscreen, no ActionBar, dark -->
+    <style name="Theme.Venolk1" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Window background matches app dark bg -->
+        <item name="android:windowBackground">@color/bg_dark</item>
+
+        <!-- Transparent status and nav bars (edge-to-edge) -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+
+        <!-- Allow content to draw behind system bars -->
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+
+        <!-- Fullscreen flags -->
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+
+        <!-- Soft input: resize so keyboard doesn't cover input fields -->
+        <item name="android:windowSoftInputMode">adjustResize</item>
+
+        <!-- Material color attributes -->
+        <item name="colorPrimary">#7C6FFF</item>
+        <item name="colorPrimaryVariant">#5544DD</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#00E5FF</item>
+        <item name="colorOnSecondary">#07070F</item>
+        <item name="colorSurface">#0F0F22</item>
+        <item name="colorOnSurface">#EEEEFF</item>
+        <item name="android:colorBackground">#07070F</item>
+        <item name="colorError">#FF6B9D</item>
+    </style>
+
+    <!-- Splash screen theme (shown before app loads) -->
+    <style name="Theme.Venolk1.Splash" parent="Theme.Venolk1">
+        <item name="android:windowBackground">@drawable/splash_bg</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+</resources>

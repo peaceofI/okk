@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VENOLK1</string>
+    <string name="widget_description">VENOLK1 Study Widget — shows streak, Pomodoro count, and timer</string>
+    <string name="channel_pomodoro_name">Pomodoro Timer</string>
+    <string name="channel_pomodoro_desc">Notifies when Pomodoro session or break is complete</string>
+    <string name="channel_alarm_name">Study Alarms</string>
+    <string name="channel_alarm_desc">Your scheduled study alarms</string>
+    <string name="channel_prayer_name">Prayer Times (Adhan)</string>
+    <string name="channel_prayer_desc">Prayer time reminders and Adhan notifications</string>
+    <string name="channel_routine_name">Routine Reminders</string>
+    <string name="channel_routine_desc">Daily routine and weekly task reminders</string>
+    <string name="channel_general_name">General</string>
+    <string name="channel_general_desc">General app notifications</string>
+    <string name="notif_permission_rationale">VENOLK1 needs notification permission to send study alarms, prayer reminders, and Pomodoro completion alerts even when the app is closed.</string>
+    <string name="exact_alarm_rationale">VENOLK1 needs exact alarm permission so your study alarms fire at the precise time you set, even in battery saver mode.</string>
+    <string name="usage_stats_rationale">VENOLK1 needs Usage Access permission for the App Blocker feature to detect and block distracting apps during your study sessions.</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simple V logo for splash screen -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+  <path
+      android:fillColor="#7C6FFF"
+      android:pathData="M8,16 L24,16 L48,68 L72,16 L88,16 L56,88 L40,88 Z"/>
+</vector>
